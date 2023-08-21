@@ -12,6 +12,8 @@ private:
     QTcpServer *tcpServer = nullptr; // Server
     QVector<QTcpSocket *> sockets;   // Use QVector and store pointers
 
+    void connectToClient(QTcpSocket *socket,int port);
+
 public:
     explicit server(QObject *parent = nullptr);
 
