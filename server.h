@@ -3,24 +3,17 @@
 
 #include <QObject>
 #include <QtNetwork>
-
+#include <QVector> // Include QVector
 
 class server : public QObject
 {
     Q_OBJECT
 private:
-    QTcpServer  *tcpServer = nullptr;  //Server
-    QTcpSocket  *socket = nullptr;  //Addres
-    QVector< QVector<QString> > *commands();
-
-    void createCommands();
-
-
+    QTcpServer *tcpServer = nullptr; // Server
+    QVector<QTcpSocket *> sockets;   // Use QVector and store pointers
 
 public:
     explicit server(QObject *parent = nullptr);
-
-
 
 signals:
 
