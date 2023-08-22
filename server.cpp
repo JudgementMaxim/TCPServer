@@ -4,7 +4,7 @@ server::server(QObject *parent) : QObject(parent)
 {
     tcpServer = new QTcpServer;
 
-    if (!tcpServer->listen(QHostAddress::Any, 414)) {
+    if (!tcpServer->listen(QHostAddress::Any, 5000)) {
         qDebug() << "Server could not start. Error: " << tcpServer->errorString();
         return;
     }
@@ -15,11 +15,12 @@ server::server(QObject *parent) : QObject(parent)
 void server::newClientConnection()
 {
     QTcpSocket *newSocket = tcpServer->nextPendingConnection();
-
     sockets.append(newSocket);
+
     newSocket->write("Connected\r\n");
     connect(newSocket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
+
 
 void server::readyRead()
 {
@@ -33,9 +34,11 @@ void server::readyRead()
         } else if (line == "#CLIENTS") {
             QByteArray clientList;
             for (QTcpSocket *clientSocket : sockets) {
-                clientList.append(QString::number(clientSocket->localPort()) + "\r\n");
+
+                clientList.append(clientSocket->localAddress().toIPv4Address()) + "\r\n";
             }
             socket->write(clientList);
+            qDebug() << clientList;
         } else if (line.startsWith("#CONNECT ")) {
             QStringList parts = line.split(" ");
             if (parts.size() == 2) {
@@ -46,12 +49,12 @@ void server::readyRead()
     }
 }
 
-void server::connectToClient(QTcpSocket *originSocket, int clientPort)
+void server::connectToClient(QTcpSocket *originSocket, int clientAddress)
 {
     for (QTcpSocket *socket : sockets) {
-        if (socket->localPort() == clientPort) {
+        if (socket->localPort() == clientAddress) {
             // Send a message to the target client
-            QString message = "Connected to client on port " + QString::number(originSocket->localPort()) + "\r\n";
+            QString message = "Connected to client on port " + originSocket->localAddress().toString().toUtf8() + "\r\n";
             socket->write(message.toUtf8());
             return; // Exit the loop since we've found the target client
         }
