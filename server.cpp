@@ -32,34 +32,43 @@ void server::readyRead()
         if (line == "#DATE") {
             socket->write(QDate::currentDate().toString().toUtf8());
         } else if (line == "#CLIENTS") {
-            QByteArray clientList;
+            QString clientList;
             for (QTcpSocket *clientSocket : sockets) {
-
-                clientList.append(clientSocket->localAddress().toIPv4Address()) + "\r\n";
+                QString hostAddress = clientSocket->localAddress().toString();
+                //QString address = QString::number(hostAddress);
+                clientList.append(hostAddress + "\r\n");
             }
-            socket->write(clientList);
+            socket->write(clientList.toUtf8());
             qDebug() << clientList;
         } else if (line.startsWith("#CONNECT ")) {
             QStringList parts = line.split(" ");
             if (parts.size() == 2) {
-                int clientPort = parts[1].toInt();
+                QString clientPort = parts[1];
                 connectToClient(socket, clientPort);
             }
+        }else if(line == "DISCONNECT"){
+
         }
+
     }
 }
 
-void server::connectToClient(QTcpSocket *originSocket, int clientAddress)
+void server::writeToClient()
 {
-    for (QTcpSocket *socket : sockets) {
-        if (socket->localPort() == clientAddress) {
-            // Send a message to the target client
-            QString message = "Connected to client on port " + originSocket->localAddress().toString().toUtf8() + "\r\n";
-            socket->write(message.toUtf8());
-            return; // Exit the loop since we've found the target client
+
+}
+
+void server::connectToClient(QTcpSocket *originSocket, QString ip)
+{
+    for (QTcpSocket *socket : sockets){
+        if (socket->localAddress().toString() == ip){
+            socket->write("Client with folowing address connected: " + originSocket->localAddress().toString().toUtf8() + "\r\n");
+            originSocket->write("Connected to client with address " + originSocket->localAddress().toString().toUtf8() + "\r\n");
+            connect(socket, SIGNAL(readyRead()), this, SLOT(writeToClient()));
+        }else if(socket->localAddress().toString() == originSocket->localAddress().toString()){
+            qDebug()<< "Own Socket";
+        }else{
+            originSocket->write("Client not foucnd\r\n");
         }
     }
-
-    // If target client not found, send a message back to the origin client
-    originSocket->write("Client not found\r\n");
 }

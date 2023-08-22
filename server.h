@@ -12,7 +12,7 @@ private:
     QTcpServer *tcpServer = nullptr; // Server
     QVector<QTcpSocket *> sockets;   // Use QVector and store pointers
 
-    void connectToClient(QTcpSocket *socket,int port);
+    void connectToClient(QTcpSocket *socket,QString ip);
 
 public:
     explicit server(QObject *parent = nullptr);
@@ -22,6 +22,7 @@ signals:
 public slots:
     void newClientConnection();
     void readyRead();
+    void writeToClient();
 };
 
 #endif // SERVER_H
