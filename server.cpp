@@ -53,8 +53,10 @@ void server::readyRead()
     }
 }
 
-void server::writeToClient()
+void server::writeToClient(QString message)
 {
+
+    connectedSocket->write(message.toUtf8());
 
 }
 
@@ -62,9 +64,10 @@ void server::connectToClient(QTcpSocket *originSocket, QString ip)
 {
     for (QTcpSocket *socket : sockets){
         if (socket->localAddress().toString() == ip){
-            socket->write("Client with folowing address connected: " + originSocket->localAddress().toString().toUtf8() + "\r\n");
-            originSocket->write("Connected to client with address " + originSocket->localAddress().toString().toUtf8() + "\r\n");
-            connect(socket, SIGNAL(readyRead()), this, SLOT(writeToClient()));
+            socket->write("Client with following address connected: " + originSocket->localAddress().toString().toUtf8() + "\r\n");
+            originSocket->write("Connected to client with address " + socket->localAddress().toString().toUtf8() + "\r\n");
+            QString message = originSocket->readLine().trimmed();
+            connect(socket, SIGNAL(readyRead()),this,SLOT(writeToClient(message)));
         }else if(socket->localAddress().toString() == originSocket->localAddress().toString()){
             qDebug()<< "Own Socket";
         }else{
