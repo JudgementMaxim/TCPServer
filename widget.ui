@@ -16,7 +16,7 @@
   <property name="windowTitle">
    <string>Widget</string>
   </property>
-  <widget class="QTextBrowser" name="textBrowser">
+  <widget class="QTextBrowser" name="tbCommands">
    <property name="geometry">
     <rect>
      <x>20</x>
@@ -36,7 +36,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label">
+  <widget class="QLabel" name="lbClients">
    <property name="geometry">
     <rect>
      <x>30</x>
@@ -49,7 +49,7 @@
     <string>Connected Clients:</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton">
+  <widget class="QPushButton" name="pbDelete">
    <property name="geometry">
     <rect>
      <x>680</x>
@@ -72,7 +72,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_2">
+  <widget class="QPushButton" name="pbDisconnect">
    <property name="geometry">
     <rect>
      <x>680</x>
@@ -85,7 +85,7 @@
     <string>Disconnecten</string>
    </property>
   </widget>
-  <widget class="QListView" name="listView_2">
+  <widget class="QListView" name="lvUsers">
    <property name="geometry">
     <rect>
      <x>410</x>
@@ -95,7 +95,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_3">
+  <widget class="QPushButton" name="pbReload">
    <property name="geometry">
     <rect>
      <x>680</x>
@@ -105,7 +105,7 @@
     </rect>
    </property>
    <property name="text">
-    <string>Neu erstellen</string>
+    <string>Neu Laden</string>
    </property>
   </widget>
   <widget class="QLineEdit" name="lineEdit">
@@ -118,7 +118,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
+  <widget class="QLineEdit" name="lePasswort">
    <property name="geometry">
     <rect>
      <x>510</x>
@@ -128,7 +128,7 @@
     </rect>
    </property>
   </widget>
-  <widget class="QLabel" name="label_2">
+  <widget class="QLabel" name="lbUsername">
    <property name="geometry">
     <rect>
      <x>410</x>
@@ -141,7 +141,7 @@
     <string>Benutzername</string>
    </property>
   </widget>
-  <widget class="QLabel" name="label_3">
+  <widget class="QLabel" name="lbPasswort">
    <property name="geometry">
     <rect>
      <x>410</x>
@@ -154,7 +154,7 @@
     <string>Passwort</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_4">
+  <widget class="QPushButton" name="pbAgree">
    <property name="geometry">
     <rect>
      <x>680</x>
@@ -167,7 +167,7 @@
     <string>Bestätigen</string>
    </property>
   </widget>
-  <widget class="QPushButton" name="pushButton_5">
+  <widget class="QPushButton" name="pbExit">
    <property name="geometry">
     <rect>
      <x>410</x>

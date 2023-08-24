@@ -5,18 +5,20 @@
 
 server::server(QObject *parent) : QObject(parent)
 {
-    tcpServer = new QTcpServer;
+    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
+    db.setDatabaseName("TCPServer.sqlite"); // Replace with your database name
+    if (!db.open()) {
+        qDebug() << "Database error:" << db.lastError().text();
+        return;
+    }
 
+
+    tcpServer = new QTcpServer;
     if (!tcpServer->listen(QHostAddress::Any, 5000)) {
         qDebug() << "Server could not start. Error: " << tcpServer->errorString();
         return;
     }
-
     connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newClientConnection()));
-    // Assuming you have instances of server and Widget classes named 'this' and 'widget'
-    connect(this, &server::connectionUpdate, &widget, &Widget::changeClientNumber);
-
-
 }
 
 void server::newClientConnection()
@@ -78,26 +80,38 @@ void server::readyRead()
 
     while (socket->canReadLine()) {
         QString line = socket->readLine().trimmed();
+        if(loggedIn == false){
 
-        if (line == "#DATE") {
-            socket->write(QDate::currentDate().toString().toUtf8());
-        }
-        else if (line == "#CLIENTS") {
-            QString clientList = ClientList();
-            socket->write(clientList.toUtf8());
-        }
-        else if (line.startsWith("#MESSAGE ")) {
-            QStringList parts = line.split(" ");
-            if (parts.size() == 3) {
-                QString clientAddress = parts[1];
-                QString message = parts[2];
-                sendMessageToClient(message, clientAddress);
+        }else{
+
+            if (line == "#DATE") {
+                socket->write(QDate::currentDate().toString().toUtf8());
             }
-        }
-        else if(line == "#DISCONNECT"){
-            disconnectClient(socket);
+            else if (line == "#CLIENTS") {
+                QString clientList = ClientList();
+                socket->write(clientList.toUtf8());
+            }
+            else if (line.startsWith("#MESSAGE ")) {
+                QStringList parts = line.split(" ");
+                if (parts.size() == 3) {
+                    QString clientAddress = parts[1];
+                    QString message = parts[2];
+                    sendMessageToClient(message, clientAddress);
+                }
+            }
+            else if(line == "#DISCONNECT"){
+                disconnectClient(socket);
+            }
         }
     }
 }
+
+
+
+DatabaseManager::DatabaseManager() {
+    db = QSqlDatabase::database();
+}
+
+
 
 

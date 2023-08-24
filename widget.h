@@ -15,6 +15,7 @@ class Widget : public QWidget
 
 private:
     server server;
+    DatabaseManager db;
 
 public:
     Widget(QWidget *parent = nullptr);
@@ -22,6 +23,7 @@ public:
 
 private:
     Ui::Widget *ui;
+
 public slots:
     void changeClientNumber(int number);
 };
