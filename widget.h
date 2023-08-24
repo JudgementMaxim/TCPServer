@@ -22,5 +22,7 @@ public:
 
 private:
     Ui::Widget *ui;
+public slots:
+    void changeClientNumber(int number);
 };
 #endif // WIDGET_H

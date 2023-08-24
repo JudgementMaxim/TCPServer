@@ -1,5 +1,8 @@
 #include "server.h"
 
+
+
+
 server::server(QObject *parent) : QObject(parent)
 {
     tcpServer = new QTcpServer;
@@ -10,17 +13,64 @@ server::server(QObject *parent) : QObject(parent)
     }
 
     connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newClientConnection()));
+    // Assuming you have instances of server and Widget classes named 'this' and 'widget'
+    connect(this, &server::connectionUpdate, &widget, &Widget::changeClientNumber);
+
+
 }
 
 void server::newClientConnection()
 {
     QTcpSocket *newSocket = tcpServer->nextPendingConnection();
     sockets.append(newSocket);
+    ClientCount +=1;
+    emit connectionUpdate();
 
     newSocket->write("Connected\r\n");
     connect(newSocket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
+
+void server::sendMessageToClient(QString message, QString clientAddress)
+{
+    for (QTcpSocket *clientSocket : sockets) {
+        QString hostAddress = clientSocket->localAddress().toString();
+        if (hostAddress == clientAddress){
+            clientSocket->write(message.toUtf8());
+        }
+
+    }
+}
+
+QString server::ClientList()
+{
+    QString clientList;
+    for (QTcpSocket *clientSocket : sockets) {
+        QString hostAddress = clientSocket->localAddress().toString();
+        //QString address = QString::number(hostAddress);
+        clientList.append(hostAddress + "\r\n");
+    }
+
+    return clientList;
+}
+
+void server::disconnectClient(QTcpSocket *socket)
+{
+    int clientPlace = 0;
+    for (QTcpSocket *clientSocket : sockets) {
+        QString hostAddress = clientSocket->localAddress().toString();
+        QString clientAddress = socket->localAddress().toString();
+        if (hostAddress == clientAddress){
+            sockets.remove(clientPlace);
+            socket->write("Disconnected");
+            socket->disconnect();
+            ClientCount -=1;
+            qDebug() << clientPlace;
+        }
+        clientPlace +=1;
+        qDebug() << clientPlace;
+    }
+}
 
 void server::readyRead()
 {
@@ -31,47 +81,23 @@ void server::readyRead()
 
         if (line == "#DATE") {
             socket->write(QDate::currentDate().toString().toUtf8());
-        } else if (line == "#CLIENTS") {
-            QString clientList;
-            for (QTcpSocket *clientSocket : sockets) {
-                QString hostAddress = clientSocket->localAddress().toString();
-                //QString address = QString::number(hostAddress);
-                clientList.append(hostAddress + "\r\n");
-            }
+        }
+        else if (line == "#CLIENTS") {
+            QString clientList = ClientList();
             socket->write(clientList.toUtf8());
-            qDebug() << clientList;
-        } else if (line.startsWith("#CONNECT ")) {
+        }
+        else if (line.startsWith("#MESSAGE ")) {
             QStringList parts = line.split(" ");
-            if (parts.size() == 2) {
-                QString clientPort = parts[1];
-                connectToClient(socket, clientPort);
+            if (parts.size() == 3) {
+                QString clientAddress = parts[1];
+                QString message = parts[2];
+                sendMessageToClient(message, clientAddress);
             }
-        }else if(line == "DISCONNECT"){
-
         }
-
-    }
-}
-
-void server::writeToClient(QString message)
-{
-
-    connectedSocket->write(message.toUtf8());
-
-}
-
-void server::connectToClient(QTcpSocket *originSocket, QString ip)
-{
-    for (QTcpSocket *socket : sockets){
-        if (socket->localAddress().toString() == ip){
-            socket->write("Client with following address connected: " + originSocket->localAddress().toString().toUtf8() + "\r\n");
-            originSocket->write("Connected to client with address " + socket->localAddress().toString().toUtf8() + "\r\n");
-            QString message = originSocket->readLine().trimmed();
-            connect(socket, SIGNAL(readyRead()),this,SLOT(writeToClient(message)));
-        }else if(socket->localAddress().toString() == originSocket->localAddress().toString()){
-            qDebug()<< "Own Socket";
-        }else{
-            originSocket->write("Client not foucnd\r\n");
+        else if(line == "#DISCONNECT"){
+            disconnectClient(socket);
         }
     }
 }
+
+

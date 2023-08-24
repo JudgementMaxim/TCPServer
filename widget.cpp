@@ -6,10 +6,16 @@ Widget::Widget(QWidget *parent)
     , ui(new Ui::Widget)
 {
     ui->setupUi(this);
+
 }
 
 Widget::~Widget()
 {
     delete ui;
+}
+
+void Widget::changeClientNumber(int number)
+{
+    ui->lcdClientCount->display(number);
 }
 

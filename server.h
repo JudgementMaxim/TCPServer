@@ -11,19 +11,28 @@ class server : public QObject
 private:
     QTcpServer *tcpServer = nullptr; // Server
     QVector<QTcpSocket *> sockets;   // Use QVector and store pointers
-    QTcpSocket *connectedSocket = nullptr; //Connected Socket //Into Client Class
 
-    void connectToClient(QTcpSocket *socket,QString ip);
+    void messageToClient(QTcpSocket socket,QString message);
+
+    void sendMessageToClient(QString message, QString clientAddress);
+
+    QString ClientList();
+
+    QStringList splitMessage(QString line);
+
+    void disconnectClient(QTcpSocket *socket);
 
 public:
     explicit server(QObject *parent = nullptr);
 
-signals:
+    int ClientCount = 0;
 
+signals:
+    void connectionUpdate();
 public slots:
     void newClientConnection();
     void readyRead();
-    void writeToClient(QString message);
+
 };
 
 #endif // SERVER_H
