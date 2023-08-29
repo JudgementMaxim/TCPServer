@@ -62,40 +62,20 @@
     <string>Entfernen</string>
    </property>
   </widget>
-  <widget class="QListView" name="listView">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>10</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-  </widget>
   <widget class="QPushButton" name="pbDisconnect">
    <property name="geometry">
     <rect>
      <x>680</x>
      <y>10</y>
      <width>111</width>
-     <height>191</height>
+     <height>91</height>
     </rect>
    </property>
    <property name="text">
     <string>Disconnecten</string>
    </property>
   </widget>
-  <widget class="QListView" name="lvUsers">
-   <property name="geometry">
-    <rect>
-     <x>410</x>
-     <y>220</y>
-     <width>256</width>
-     <height>192</height>
-    </rect>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pbReload">
+  <widget class="QPushButton" name="pbUserReload">
    <property name="geometry">
     <rect>
      <x>680</x>
@@ -108,7 +88,7 @@
     <string>Neu Laden</string>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QLineEdit" name="leUserName">
    <property name="geometry">
     <rect>
      <x>510</x>
@@ -178,6 +158,39 @@
    </property>
    <property name="text">
     <string>Schliesen</string>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="lwUsers">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>220</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QListWidget" name="lwClients">
+   <property name="geometry">
+    <rect>
+     <x>410</x>
+     <y>10</y>
+     <width>256</width>
+     <height>192</height>
+    </rect>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pbDcReload">
+   <property name="geometry">
+    <rect>
+     <x>680</x>
+     <y>110</y>
+     <width>111</width>
+     <height>91</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Neu Laden</string>
    </property>
   </widget>
  </widget>

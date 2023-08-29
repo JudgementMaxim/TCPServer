@@ -11,26 +11,31 @@ class server : public QObject
 private:
     QTcpServer *tcpServer = nullptr;
     QVector<QTcpSocket *> sockets;
-
-    void sendMessageToClient(QString message, QString clientAddress);
-
-    QString ClientList();
-
-    void disconnectClient(QTcpSocket *socket);
+    QStringList clientList;
 
     bool loggedIn = false;
+    int ClientCount = 0;
+
+    void sendToClient(QTcpSocket *socket, const QByteArray &data);
+    QStringList splitMessage(const QString &line);
+    int findClientPlace(const QString &clientAddress);
+    int findClientPlaceList(const QString &clientAddress);
+    void increaseClientCount();
+    void decreaseClientCount();
 
 public:
     explicit server(QObject *parent = nullptr);
 
-    int ClientCount = 0;
-
 signals:
     void clientCountChanged(int newCount);
+    void atCL(QStringList clientList);
 
 public slots:
     void newClientConnection();
     void readyRead();
+    void sendMessageToClient(QString message, QString clientAddress);
+    QString getClientList();
+    void disconnectClient(QTcpSocket *socket);
 };
 
 #endif // SERVER_H

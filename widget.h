@@ -24,7 +24,13 @@ public:
 private:
     Ui::Widget *ui;
 
+private slots:
+    void closeServer();
+
+
 public slots:
     void handleClientCountChange(int newCount);
+    void rCV(QStringList clientList);
+    void rUV(QStringList userList);
 };
 #endif // WIDGET_H
