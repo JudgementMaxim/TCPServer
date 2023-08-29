@@ -14,8 +14,8 @@ class Widget : public QWidget
     Q_OBJECT
 
 private:
-    server server;
-    DatabaseManager db;
+    server *serverInstance;
+
 
 public:
     Widget(QWidget *parent = nullptr);
@@ -25,6 +25,6 @@ private:
     Ui::Widget *ui;
 
 public slots:
-    void changeClientNumber(int number);
+    void handleClientCountChange(int newCount);
 };
 #endif // WIDGET_H

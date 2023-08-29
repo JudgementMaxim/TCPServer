@@ -1,18 +1,7 @@
 #include "server.h"
 
-
-
-
 server::server(QObject *parent) : QObject(parent)
 {
-    QSqlDatabase db = QSqlDatabase::addDatabase("QSQLITE");
-    db.setDatabaseName("TCPServer.sqlite"); // Replace with your database name
-    if (!db.open()) {
-        qDebug() << "Database error:" << db.lastError().text();
-        return;
-    }
-
-
     tcpServer = new QTcpServer;
     if (!tcpServer->listen(QHostAddress::Any, 5000)) {
         qDebug() << "Server could not start. Error: " << tcpServer->errorString();
@@ -25,22 +14,20 @@ void server::newClientConnection()
 {
     QTcpSocket *newSocket = tcpServer->nextPendingConnection();
     sockets.append(newSocket);
-    ClientCount +=1;
-    emit connectionUpdate();
+    ClientCount += 1;
+    emit clientCountChanged(ClientCount);
 
     newSocket->write("Connected\r\n");
     connect(newSocket, SIGNAL(readyRead()), this, SLOT(readyRead()));
 }
 
-
 void server::sendMessageToClient(QString message, QString clientAddress)
 {
     for (QTcpSocket *clientSocket : sockets) {
         QString hostAddress = clientSocket->localAddress().toString();
-        if (hostAddress == clientAddress){
+        if (hostAddress == clientAddress) {
             clientSocket->write(message.toUtf8());
         }
-
     }
 }
 
@@ -49,10 +36,8 @@ QString server::ClientList()
     QString clientList;
     for (QTcpSocket *clientSocket : sockets) {
         QString hostAddress = clientSocket->localAddress().toString();
-        //QString address = QString::number(hostAddress);
         clientList.append(hostAddress + "\r\n");
     }
-
     return clientList;
 }
 
@@ -62,56 +47,38 @@ void server::disconnectClient(QTcpSocket *socket)
     for (QTcpSocket *clientSocket : sockets) {
         QString hostAddress = clientSocket->localAddress().toString();
         QString clientAddress = socket->localAddress().toString();
-        if (hostAddress == clientAddress){
+        if (hostAddress == clientAddress) {
             sockets.remove(clientPlace);
             socket->write("Disconnected");
+            ClientCount -= 1;
+            emit clientCountChanged(ClientCount);
             socket->disconnect();
-            ClientCount -=1;
-            qDebug() << clientPlace;
         }
-        clientPlace +=1;
-        qDebug() << clientPlace;
+        clientPlace += 1;
     }
 }
 
 void server::readyRead()
 {
-    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender()); // Get the socket that emitted the signal
-
+    QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());
+    qDebug() << "Kann Lesen";
     while (socket->canReadLine()) {
         QString line = socket->readLine().trimmed();
-        if(loggedIn == false){
-
-        }else{
-
-            if (line == "#DATE") {
-                socket->write(QDate::currentDate().toString().toUtf8());
+        if (line == "#DATE") {
+            socket->write(QDate::currentDate().toString().toUtf8());
+        } else if (line == "#CLIENTS") {
+            QString clientList = ClientList();
+            socket->write(clientList.toUtf8());
+        } else if (line.startsWith("#MESSAGE ")) {
+            QStringList parts = line.split(" ");
+            if (parts.size() == 3) {
+                QString clientAddress = parts[1];
+                QString message = parts[2];
+                sendMessageToClient(message, clientAddress);
             }
-            else if (line == "#CLIENTS") {
-                QString clientList = ClientList();
-                socket->write(clientList.toUtf8());
-            }
-            else if (line.startsWith("#MESSAGE ")) {
-                QStringList parts = line.split(" ");
-                if (parts.size() == 3) {
-                    QString clientAddress = parts[1];
-                    QString message = parts[2];
-                    sendMessageToClient(message, clientAddress);
-                }
-            }
-            else if(line == "#DISCONNECT"){
-                disconnectClient(socket);
-            }
+        } else if (line == "#DISCONNECT") {
+            disconnectClient(socket);
         }
     }
 }
-
-
-
-DatabaseManager::DatabaseManager() {
-    db = QSqlDatabase::database();
-}
-
-
-
 
