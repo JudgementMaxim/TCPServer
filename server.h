@@ -36,6 +36,7 @@ public slots:
     void sendMessageToClient(QString message, QString clientAddress);
     QString getClientList();
     void disconnectClient(QTcpSocket *socket);
+    void getSocketforDisconnect(QString address);
 };
 
 #endif // SERVER_H

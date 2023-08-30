@@ -15,8 +15,11 @@ Widget::Widget(QWidget *parent)
     connect(serverInstance, &server::clientCountChanged, this, &Widget::handleClientCountChange);
     connect(serverInstance, &server::atCL,this, &Widget::rCV);
 
-    connect(ui->pbExit,SIGNAL(clicked()),this,SLOT(closeServer()));
 
+    connect(ui->pbExit,SIGNAL(clicked()),this,SLOT(closeServer()));
+    connect(ui->pbDisconnect,SIGNAL(clicked()),this,SLOT(pbDisconnect_pushed()));
+
+    connect(this,&Widget::addressFound, serverInstance, &server::getSocketforDisconnect);
 
 }
 
@@ -39,6 +42,14 @@ Widget::~Widget()
 void Widget::closeServer()
 {
     exit(0);
+}
+
+void Widget::pbDisconnect_pushed()
+{
+    QModelIndex index = ui->lwClients->currentIndex();
+    QString address = index.data(Qt::DisplayRole).toString();
+    qDebug() << address;
+    emit addressFound(address);
 }
 
 void Widget::rCV(QStringList clientList)

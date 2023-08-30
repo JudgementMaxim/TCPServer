@@ -58,6 +58,17 @@ void server::disconnectClient(QTcpSocket *socket)
     }
 }
 
+void server::getSocketforDisconnect(QString address)
+{
+    for (QTcpSocket *clientSocket : sockets) {
+        QString hostAddress = clientSocket->localAddress().toString();
+        if(hostAddress == address){
+            QTcpSocket *disconnectingSocket = clientSocket;
+            disconnectClient(disconnectingSocket);
+        }
+    }
+}
+
 void server::readyRead()
 {
     QTcpSocket *socket = qobject_cast<QTcpSocket *>(sender());

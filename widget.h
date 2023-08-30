@@ -24,8 +24,12 @@ public:
 private:
     Ui::Widget *ui;
 
+signals:
+    void addressFound(QString address);
+
 private slots:
     void closeServer();
+    void pbDisconnect_pushed();
 
 
 public slots:
