@@ -36,5 +36,6 @@ public slots:
     void handleClientCountChange(int newCount);
     void rCV(QStringList clientList);
     void rUV(QStringList userList);
+    void updateTextbox();
 };
 #endif // WIDGET_H

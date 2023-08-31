@@ -24,11 +24,13 @@ private:
     void decreaseClientCount();
 
 public:
+    QString  allCommands;
     explicit server(QObject *parent = nullptr);
 
 signals:
     void clientCountChanged(int newCount);
     void atCL(QStringList clientList);
+    void newCommandSend();
 
 public slots:
     void newClientConnection();

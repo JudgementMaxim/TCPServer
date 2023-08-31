@@ -14,12 +14,15 @@ Widget::Widget(QWidget *parent)
     // Connect the signal from the server to the slot in the Widget
     connect(serverInstance, &server::clientCountChanged, this, &Widget::handleClientCountChange);
     connect(serverInstance, &server::atCL,this, &Widget::rCV);
+    connect(serverInstance, &server::newCommandSend,this, &Widget::updateTextbox);
+
 
 
     connect(ui->pbExit,SIGNAL(clicked()),this,SLOT(closeServer()));
     connect(ui->pbDisconnect,SIGNAL(clicked()),this,SLOT(pbDisconnect_pushed()));
 
     connect(this,&Widget::addressFound, serverInstance, &server::getSocketforDisconnect);
+
 
 }
 
@@ -62,5 +65,11 @@ void Widget::rUV(QStringList userList)
 {
     ui->lwUsers->clear();
     ui->lwUsers->addItems(userList);
+}
+
+void Widget::updateTextbox()
+{
+    ui->tbCommands->clear();
+    ui->tbCommands->append(serverInstance->allCommands);
 }
 

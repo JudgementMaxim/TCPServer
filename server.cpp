@@ -91,6 +91,8 @@ void server::readyRead()
             sendToClient(socket, "Please close the program now \r\n");
             disconnectClient(socket);
         }
+        allCommands.append(socket->localAddress().toString() + ": " +line + "\r\n");
+        emit newCommandSend();
     }
 }
 
