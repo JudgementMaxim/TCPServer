@@ -4,15 +4,18 @@
 #include <QObject>
 #include <QtNetwork>
 #include <QVector>
+#include <QtSql>
+
+#include "clients.h"
 
 class server : public QObject
 {
     Q_OBJECT
 private:
     QTcpServer *tcpServer = nullptr;
+
     QVector<QTcpSocket *> sockets;
     QStringList clientList;
-
     bool loggedIn = false;
     int ClientCount = 0;
 
@@ -23,7 +26,20 @@ private:
     void increaseClientCount();
     void decreaseClientCount();
 
+    //Database
+
+    QSqlDatabase sqliteDatabase;
+    void connectDatabase();
+    void disconnectDatabase();
+
+
+    void sendMessageToLoggedInClient(QString username, QString message);
+    void broadcastMessageToLoggedInClients(QString message);
+    void logoutClient(QString username);
+    void processClientCommand(QTcpSocket *socket, const QString &line);
+
 public:
+    QMap<QString, QTcpSocket *> loggedInClients;
     QString  allCommands;
     explicit server(QObject *parent = nullptr);
 
@@ -35,10 +51,14 @@ signals:
 public slots:
     void newClientConnection();
     void readyRead();
-    void sendMessageToClient(QString message, QString clientAddress);
+    void sendMessageToClient(const QString &message, const QString &clientAddress);
     QString getClientList();
     void disconnectClient(QTcpSocket *socket);
     void getSocketforDisconnect(QString address);
+
+    //Database
+    void userLogin();
 };
+
 
 #endif // SERVER_H
